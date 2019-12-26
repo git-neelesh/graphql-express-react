@@ -1,5 +1,6 @@
 const Event = require('../models/event');
 const User = require('../models/user')
+const bcrypt = require('bcryptjs');
 const root = {
     hello: () => 'Hello world!',
     events: () => {
@@ -8,14 +9,14 @@ const root = {
                 console.log("Having some error while fetching", err);
                 return err;
             })
-            .then(result => {
-                return result.map(event => {
+            .then(events => {
+                return events.map(event => {
                     return User.findById(event.creator)
                         .catch(err => {
                             return err
                         })
                         .then(user => {
-                            return { ...event, creator: user}
+                            return { ...event._doc, creator: user, password: null }
                         })
                 })
 
@@ -23,12 +24,14 @@ const root = {
         // return events;
     },
     users: () => {
-        return User.find({}).catch(err => {
+        return User.find().catch(err => {
             console.log("Having some error while fetching", err);
             return err;
         })
-            .then(result => {
-                return result;
+            .then(users => {
+                return users.map(user => {
+                    return { ...user._doc, _id: user.id, password: null }
+                })
 
             })
     },
@@ -38,7 +41,7 @@ const root = {
             id: Math.random(),
             title: eventInput.title,
             completed: eventInput.completed,
-            creator: "5e034e1777c4f39a587734b3"
+            creator: "5e04f14dec733b4570acf6b4"
         }
         return (new Event(event)).save().then(data => {
             console.log("data", data)
@@ -50,17 +53,21 @@ const root = {
         // events.push(event)
     },
     createUsers: ({ userInput }) => {
-        const user = new User({
-            email: userInput.email,
-            password: userInput.password
-        })
-        return user.save().then(user => {
-            console.log("data", user)
-            return { ...user._doc, password: null };
-        }).catch(err => {
-            console.log(" Having some error while saving user", err);
-            return err;
-        })
+        return bcrypt.hash(userInput.password, 12).then(function (hash) {
+            const user = new User({
+                email: userInput.email,
+                password: hash
+            })
+            return user.save().then(user => {
+                console.log("data", user)
+                return { ...user._doc, password: null };
+            }).catch(err => {
+                console.log(" Having some error while saving user", err);
+                return err;
+            })
+        });
+
+
     }
 };
 
