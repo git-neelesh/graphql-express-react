@@ -1,6 +1,32 @@
 const Event = require('../models/event');
 const User = require('../models/user')
 const bcrypt = require('bcryptjs');
+// Created userFn and eventFn function to achieve chainable access of values liek user->events->user->Events....
+const userFn = userId => {
+    return User.findById(userId)
+        .catch(err => {
+            return err
+        })
+        .then(user => {
+            return (user ? { ...user._doc, password: null } : null)
+        })
+}
+// TODO: Will implement it
+const eventFn = ids => {
+   /* return Event.find({}, $in: ids)
+        .catch(err => {
+            console.log("Having some error while fetching", err);
+            return err;
+        })
+        .then(events => {
+            return events.map(event => {
+                return { ...event._doc, creator: userFn.bind(this, event.creator) }
+            })
+
+        })
+        */
+}
+
 const root = {
     hello: () => 'Hello world!',
     events: () => {
@@ -11,13 +37,7 @@ const root = {
             })
             .then(events => {
                 return events.map(event => {
-                    return User.findById(event.creator)
-                        .catch(err => {
-                            return err
-                        })
-                        .then(user => {
-                            return { ...event._doc, creator: user, password: null }
-                        })
+                    return { ...event._doc, creator: userFn.bind(this, event.creator) }
                 })
 
             })
