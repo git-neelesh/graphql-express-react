@@ -17,9 +17,25 @@ In the project directory, you can run:
 
 Or
 
-### `nodemon app.js`
+### `nodemon app.js --config local.config.json`
+
 
 Server will be accesible on http://localhost:3000/ and graphql ui will be  http://localhost:3000/graphql
+
+Simple Query:
+### 
+` 
+query {
+  events {
+    title
+    creator {
+      email
+    }
+  }
+}
+`
+
+![graphql](https://user-images.githubusercontent.com/1026717/71485442-05922e80-2837-11ea-9843-5ef8ac5331a8.png)
 
 
 
