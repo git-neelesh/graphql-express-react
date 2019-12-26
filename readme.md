@@ -15,4 +15,11 @@ In the project directory, you can run:
 ### `npm install -g nodemon`
 ### `nodemon app.js`
 
+Or
+
+### `nodemon app.js`
+
+Server will be accesible on http://localhost:3000/ and graphql ui will be  http://localhost:3000/graphql
+
+
 
